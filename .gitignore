@@ -3,6 +3,10 @@
 **/*.rs.bk
 # Cargo.lock IS committed (this workspace produces binaries).
 
+# Official release files downloaded by scripts/fetch-live-release.py.
+/.cache/aethus-release/
+/out/live-release/
+
 # The wasm-bindgen build output (`scripts/web-build.sh`) — regenerated
 # from `crates/wenilla` + `web/index.html`/`web/wasi_stubs.js` on every build, and the .wasm
 # alone can run tens of MB.
@@ -28,7 +32,7 @@
 /benilla-config
 
 # The account a scripted run from this checkout logs in as (scripts/probe-identity.sh and the
-# client's account guard read it): WOW_USER=, WOW_PASS=, WOW_CHAR=, one per line. A credential.
+# client's account guard read it. A credential.
 /.probe-identity
 
 # Profiling output: `--features bevy/trace_chrome` drops a multi-GB flame chart in the cwd, which
