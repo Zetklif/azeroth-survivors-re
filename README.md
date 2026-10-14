@@ -74,6 +74,23 @@ See [CONTROLS.md](CONTROLS.md). The short version: **WASD** to move, **Space** t
 for your class's movement spell, the **mouse wheel** to zoom, **C** to unlock the camera, **Esc**
 to pause, **1/2/3** to pick a level-up card.
 
+### Sync the currently published Windows release
+
+The official website publishes its current Windows executable as gzip-compressed parts and
+publishes an MPQ patch manifest. The following target reconstructs the executable, verifies
+its size and SHA-256 against the live manifests, and writes the files under
+`out/live-release/` without committing those binaries or game data:
+
+```bash
+make sync-live
+```
+
+The GitHub Actions workflow checks the manifests every two hours (UTC). When the published
+release or patch hashes change, it downloads and verifies the new files, updates
+`live-release.json`, and attaches a verified package to that workflow run. Workflow artifacts
+are retained for 90 days. The official site's manifests remain the source of truth; this is
+a downloader for the published binary, not a source build of the official release.
+
 ## The game data (not in this repo)
 
 This repo ships **no Blizzard content** — no art, models, sounds, maps, MPQ contents, or
