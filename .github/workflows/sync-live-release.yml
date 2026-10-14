@@ -1,0 +1,174 @@
+name: Sync official live release
+
+on:
+  # GitHub evaluates schedules in UTC. Run every two hours, at minute 17.
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-official-live-release
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out default branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch manifests and compare with tracked release
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/aethus-release
+
+          curl --fail --location --silent --show-error --retry 2 \
+            --user-agent 'Mozilla/5.0' \
+            'https://wow.aethus.pl/exe/latest.json' \
+            --output .cache/aethus-release/latest.json
+
+          curl --fail --location --silent --show-error --retry 2 \
+            --user-agent 'Mozilla/5.0' \
+            'https://wow.aethus.pl/exe/data/patches.json' \
+            --output .cache/aethus-release/patches.json
+
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          cache = Path(".cache/aethus-release")
+          release = json.loads((cache / "latest.json").read_text(encoding="utf-8"))
+          patch_manifest = json.loads((cache / "patches.json").read_text(encoding="utf-8"))
+
+          if not isinstance(release.get("version"), str) or not release["version"]:
+              raise SystemExit("latest.json has no valid version")
+          if not isinstance(release.get("size"), int) or not isinstance(release.get("sha256"), str):
+              raise SystemExit("latest.json has invalid size/SHA-256")
+          if not isinstance(release.get("parts"), list) or not release["parts"]:
+              raise SystemExit("latest.json contains no parts")
+          if not isinstance(patch_manifest.get("patches"), list):
+              raise SystemExit("patches.json contains no patches array")
+
+          state = {
+              "source": "https://wow.aethus.pl",
+              "version": release["version"],
+              "executable": {
+                  "size": release["size"],
+                  "sha256": release["sha256"].lower(),
+                  "parts": release["parts"],
+              },
+              "patches": [
+                  {
+                      "name": patch["name"],
+                      "size": patch["size"],
+                      "sha256": patch["sha256"].lower(),
+                      "parts": patch["parts"],
+                  }
+                  for patch in patch_manifest["patches"]
+              ],
+          }
+
+          serialized = json.dumps(state, indent=2, sort_keys=True) + "\n"
+          (cache / "current-state.json").write_text(serialized, encoding="utf-8")
+
+          tracked = Path("live-release.json")
+          changed = not tracked.exists() or tracked.read_text(encoding="utf-8") != serialized
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"changed={str(changed).lower()}\n")
+              output.write(f"version={release['version']}\n")
+
+          print(f"Official version: {release['version']}")
+          print(f"Release changed: {changed}")
+          PY
+
+      - name: Download and verify release
+        if: steps.check.outputs.changed == 'true'
+        run: python3 scripts/fetch-live-release.py
+
+      - name: Record verified release metadata
+        if: steps.check.outputs.changed == 'true'
+        id: record
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          cache = Path(".cache/aethus-release")
+          release = json.loads((cache / "latest.json").read_text(encoding="utf-8"))
+          patches = json.loads((cache / "patches.json").read_text(encoding="utf-8"))
+
+          state = {
+              "source": "https://wow.aethus.pl",
+              "version": release["version"],
+              "executable": {
+                  "size": release["size"],
+                  "sha256": release["sha256"].lower(),
+                  "parts": release["parts"],
+              },
+              "patches": [
+                  {
+                      "name": patch["name"],
+                      "size": patch["size"],
+                      "sha256": patch["sha256"].lower(),
+                      "parts": patch["parts"],
+                  }
+                  for patch in patches["patches"]
+              ],
+          }
+          Path("live-release.json").write_text(
+              json.dumps(state, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"version={release['version']}\n")
+          PY
+
+      - name: Commit updated release metadata
+        if: steps.check.outputs.changed == 'true'
+        env:
+          RELEASE_VERSION: ${{ steps.record.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live-release.json
+          if git diff --cached --quiet; then
+            echo "Release metadata is already current."
+          else
+            git commit -m "chore: sync official release ${RELEASE_VERSION}"
+            git push
+          fi
+
+      - name: Upload verified package
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AzerothSurvivors-${{ steps.record.outputs.version }}-${{ github.run_id }}
+          path: |
+            out/live-release/AzerothSurvivors.exe
+            out/live-release/Data/*.MPQ
+            out/live-release/latest.json
+            out/live-release/patches.json
+            out/live-release/README.txt
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Report unchanged release
+        if: steps.check.outputs.changed != 'true'
+        run: echo "The published release and patch hashes are unchanged; no binary download was needed."
