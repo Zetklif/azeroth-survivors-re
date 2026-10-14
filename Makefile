@@ -5,13 +5,16 @@ DATA_DIR := wow-data
 DATA     := $(DATA_DIR)/Data
 WASM     := web/dist/wenilla_bg.wasm
 
-.PHONY: help build start native fetch-data toolchain wasm clean
+.PHONY: help build start native fetch-data toolchain wasm clean sync-live
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 
 fetch-data: ## Download the game data (a WoW 1.12.1 client) from archive.org
 	./scripts/fetch-data.sh
+
+sync-live: ## Download and verify the current official Windows release + listed patches
+	python3 scripts/fetch-live-release.py
 
 toolchain: ## Install the wasm toolchain (wasi-sdk, wasm-bindgen, binaryen)
 	./scripts/web-setup.sh
