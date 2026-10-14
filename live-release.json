@@ -1,0 +1,35 @@
+{
+  "executable": {
+    "parts": [
+      {
+        "size": 20971520,
+        "url": "0.85.0/part-000.bin"
+      },
+      {
+        "size": 20971520,
+        "url": "0.85.0/part-001.bin"
+      },
+      {
+        "size": 1508960,
+        "url": "0.85.0/part-002.bin"
+      }
+    ],
+    "sha256": "2797e8062c64da51da6f7ae15aabfc448e66447c783ecddf9b8c1d899f1795fb",
+    "size": 130406912
+  },
+  "patches": [
+    {
+      "name": "patch-2.MPQ",
+      "parts": [
+        {
+          "size": 2411073,
+          "url": "patch-2/part-000.bin"
+        }
+      ],
+      "sha256": "366edee41642a5dda22ed90cc252b543ee375755b7e8bee81e2a6cd59fd7b286",
+      "size": 4690878
+    }
+  ],
+  "source": "https://wow.aethus.pl",
+  "version": "0.85.0"
+}
