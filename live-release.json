@@ -3,19 +3,19 @@
     "parts": [
       {
         "size": 20971520,
-        "url": "0.95.1/part-000.bin"
+        "url": "0.97.0/part-000.bin"
       },
       {
         "size": 20971520,
-        "url": "0.95.1/part-001.bin"
+        "url": "0.97.0/part-001.bin"
       },
       {
-        "size": 1726197,
-        "url": "0.95.1/part-002.bin"
+        "size": 2765961,
+        "url": "0.97.0/part-002.bin"
       }
     ],
-    "sha256": "642d19b8cd6596d56c42089ba2a414a2571e2372f7c6fc74bfba071f101d03db",
-    "size": 131086336
+    "sha256": "2149da82c8e6e1096cdd7d600c60a2b7d763a6969bae425323db9ebbe6e56a4e",
+    "size": 133217280
   },
   "patches": [
     {
@@ -54,8 +54,47 @@
       ],
       "sha256": "2e895e0e0ff6a4781d0e0aaa6ea7d32ed1fe36841e17806fe1855cb880d18865",
       "size": 22769233
+    },
+    {
+      "name": "patch-5.MPQ",
+      "parts": [
+        {
+          "size": 20971520,
+          "url": "patch-5/part-000.bin"
+        },
+        {
+          "size": 20971520,
+          "url": "patch-5/part-001.bin"
+        },
+        {
+          "size": 20971520,
+          "url": "patch-5/part-002.bin"
+        },
+        {
+          "size": 20971520,
+          "url": "patch-5/part-003.bin"
+        },
+        {
+          "size": 20971520,
+          "url": "patch-5/part-004.bin"
+        },
+        {
+          "size": 20971520,
+          "url": "patch-5/part-005.bin"
+        },
+        {
+          "size": 20971520,
+          "url": "patch-5/part-006.bin"
+        },
+        {
+          "size": 7774319,
+          "url": "patch-5/part-007.bin"
+        }
+      ],
+      "sha256": "5008e56873718b468fa5ae1b697dcbe4f5da9ffe6c793f3ef9939dbd7716f3d8",
+      "size": 267019039
     }
   ],
   "source": "https://wow.aethus.pl",
-  "version": "0.95.1"
+  "version": "0.97.0"
 }
