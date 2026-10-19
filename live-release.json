@@ -3,19 +3,19 @@
     "parts": [
       {
         "size": 20971520,
-        "url": "0.102.3/part-000.bin"
+        "url": "0.103.0/part-000.bin"
       },
       {
         "size": 20971520,
-        "url": "0.102.3/part-001.bin"
+        "url": "0.103.0/part-001.bin"
       },
       {
-        "size": 4842828,
-        "url": "0.102.3/part-002.bin"
+        "size": 4857717,
+        "url": "0.103.0/part-002.bin"
       }
     ],
-    "sha256": "2c2f3926e1f8f8092809f5de0624ac8f2197bb341a2870d408ce0250f13f094a",
-    "size": 139691008
+    "sha256": "6382e9ae654295293b82d48fb07a1aa999132775bda10c6c6f80d973d2c1ddfb",
+    "size": 139713536
   },
   "patches": [
     {
@@ -115,8 +115,19 @@
       ],
       "sha256": "f5fb15b181cf01cc6b5cf2ee9948a27ecc4ba27bab9a8bec584df4381932aae6",
       "size": 276649
+    },
+    {
+      "name": "patch-8.MPQ",
+      "parts": [
+        {
+          "size": 3593351,
+          "url": "patch-8/part-000.bin"
+        }
+      ],
+      "sha256": "ae3aaa29cadb7aeba8255f5b4a8305c7cbecfe8f0d3ed9646522113d16c3e12e",
+      "size": 4155417
     }
   ],
   "source": "https://wow.aethus.pl",
-  "version": "0.102.3"
+  "version": "0.103.0"
 }
