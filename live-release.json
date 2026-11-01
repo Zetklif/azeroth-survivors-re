@@ -3,19 +3,19 @@
     "parts": [
       {
         "size": 20971520,
-        "url": "0.134.0/part-000.bin"
+        "url": "0.135.1/part-000.bin"
       },
       {
         "size": 20971520,
-        "url": "0.134.0/part-001.bin"
+        "url": "0.135.1/part-001.bin"
       },
       {
-        "size": 7863067,
-        "url": "0.134.0/part-002.bin"
+        "size": 7863722,
+        "url": "0.135.1/part-002.bin"
       }
     ],
-    "sha256": "ed7dc687778ef7a613531f1eb6e25766fe06a63552115ebbd024fdede7d1a3f6",
-    "size": 147793408
+    "sha256": "71e5f1767279db4bd428d1cd9c5d50d37759b72295386a69f9e3f6e70bc59249",
+    "size": 147797504
   },
   "patches": [
     {
@@ -162,5 +162,5 @@
     }
   ],
   "source": "https://wow.aethus.pl",
-  "version": "0.134.0"
+  "version": "0.135.1"
 }
